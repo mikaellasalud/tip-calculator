@@ -10,10 +10,10 @@ import android.widget.EditText
 import android.widget.SeekBar
 import android.widget.TextView
 
-/*fun main() {
+fun main() {
 
-    TipCalculator.computeTip()
-}*/
+    TipCalculator()
+}
 
 class MainActivity : AppCompatActivity() {
 
@@ -24,6 +24,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var tvTotal: TextView
     private lateinit var tvDescriber: TextView
 
+    private val tipCalculator = TipCalculator()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,9 +50,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun afterTextChanged(s: Editable?) {
-                computeTip()
-                //tipCalculator().computeTip()
-
+                computeAndDisplayTip()
             }
         })
     }
@@ -61,10 +60,8 @@ class MainActivity : AppCompatActivity() {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
 
                 tvTipPercent.text = "$progress%"
-                //tipCalculator().computeTip()
 
-                computeTip()
-                //getTipDescription()
+                computeAndDisplayTip()
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
@@ -74,20 +71,22 @@ class MainActivity : AppCompatActivity() {
             }
         })
     }
-        var tipDescription = ""
+        //var tipDescription = ""
 
-        fun computeTip() {
+        private fun computeAndDisplayTip() {
             val amount: Double = etAmount.text.toString().toDoubleOrNull() ?: 0.0
             val percentage: Int = seekBar.progress
 
-            val tip = amount * (percentage / 100.0)
-            val total = amount + tip
+            tipCalculator.computeTip(amount, percentage)
 
-            tvTip.text = "%.2f".format(tip)
-            tvTotal.text = "%.2f".format(total)
+            displayTip()
+        }
 
+        private fun displayTip(){
+            tvTip.text = "%.2f".format(tipCalculator.tip)
+            tvTotal.text = "%.2f".format(tipCalculator.total)
 
-            tipDescription = when (percentage) {
+            val tipDescription = when (seekBar.progress){
                 in 0..9 -> "Poor"
                 in 10..15 -> "Good"
                 in 16..20 -> "Great"
